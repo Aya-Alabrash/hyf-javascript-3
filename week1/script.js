@@ -1,8 +1,5 @@
 'use strict';
-let url = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
-let secondUrl = {};
-let repoName = [];
-let repoUrlArr = [];
+const url = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
 
 function createAndAppend(tagName, parent) {
     const element = document.createElement(tagName);
@@ -10,49 +7,46 @@ function createAndAppend(tagName, parent) {
     return element;
 }
 
-main();
-
 function main() {
-    let root = document.getElementById('root');
+    const root = document.getElementById('root');
 
-    let header = createAndAppend('div', root);
+    const header = createAndAppend('div', root);
     header.setAttribute('class', 'header');
 
-    let label = createAndAppend('label', header);
+    const label = createAndAppend('label', header);
     label.setAttribute('class', 'labelClass');
     label.textContent = 'Select a Repository: ';
 
-    let select = createAndAppend('select', header);
+    const select = createAndAppend('select', header);
     select.setAttribute('id', 'select');
 
-    let container = createAndAppend('div', root);
+    const container = createAndAppend('div', root);
     container.setAttribute('class', 'container');
 
-    let informationDiv = createAndAppend('div', container);
+    const informationDiv = createAndAppend('div', container);
     informationDiv.setAttribute('class', 'infoDiv');
-    let ulInfo = createAndAppend('ul', informationDiv);
+    const ulInfo = createAndAppend('ul', informationDiv);
     ulInfo.setAttribute('id', 'infoUl');
 
-    let imagesDiv = createAndAppend('div', container);
+    const imagesDiv = createAndAppend('div', container);
     imagesDiv.setAttribute('class', 'imgDiv');
     const ulImg = createAndAppend('ul', imagesDiv);
     ulImg.setAttribute('id', 'imgUl');
 
+    fetchJSON(url, (error, data) => {
+        if (error !== null) {
+            console.error(error.message);
+        } else {
+            setupSelect(data);
+        }
+    });
 }
 
-fetchJSON(url, function (error, data) {
-    if (error !== null) {
-        console.error(error.message);
-    } else {
-        manipulateSelect(data);
-    }
-});
-
 function fetchJSON(url, cb) {
-    let req = new XMLHttpRequest();
+    const req = new XMLHttpRequest();
     req.open('GET', url);
     req.responseType = "json";
-    req.onreadystatechange = function () {
+    req.onreadystatechange = () => {
         if (req.readyState === 4) {
             if (req.status < 400) {
                 console.log(req.response);
@@ -62,96 +56,72 @@ function fetchJSON(url, cb) {
 
             }
         }
-    }
+    };
     req.send();
 }
 
-function manipulateSelect(data) {
-    for (let key in data) {
-        repoName.push(data[key].name);
-        repoUrlArr.push(data[key].url);
-    }
-    let select = document.getElementById('select');
-    for (let i = 0; i < repoName.length; i++) {
-        let options = createAndAppend('option', select);
-        options.innerHTML = repoName[i];
-        options.setAttribute('value', repoUrlArr[i]);
-    }
-    select.addEventListener('change', function (event) {
-        getDetails(event.target.value);
-        getImg(event.target.value);
+function setupSelect(repos) {
+    const select = document.getElementById('select');
+    repos.forEach((repo, i) => {
+        const options = createAndAppend('option', select);
+        options.innerHTML = repos[i].name;
+        options.setAttribute('value', i);
     });
+    select.addEventListener('change', () => {
+        getDetails(repos[select.value]);
+        //getContributors(repos[select.value].contributors_url);
+    });
+    getDetails(repos[0]);
+    //getContributors(repos[0].contributors_url);
 }
 
-function getDetails(data) {
-    let ulInfo = document.getElementById('infoUl');
+function getDetails(repo) {
+    const ulInfo = document.getElementById('infoUl');
     ulInfo.innerHTML = '';
-    fetchJSON(data, (error, rep) => {
-        if (error !== null) {
-            console.error(error.message);
-        }
-        else {
-            console.log(rep);
-            // let select = document.getElementById('select');
-            // let repo = select.options[select.selectedIndex].value;
-            // console.log(repo);
 
-            secondUrl.url = rep.contributors_url;
+    const li0 = createAndAppend('li', ulInfo);
+    li0.textContent = 'URL: ';
+    const a = createAndAppend('a', li0);
+    a.innerHTML = repo.html_url;
+    a.setAttribute('href', repo.html_url);
+    a.setAttribute('id', 'aLi');
+    a.setAttribute('target', '_blank');
+    const li1 = createAndAppend('li', ulInfo);
+    li1.textContent = 'Name : ' + repo.name;
+    const li2 = createAndAppend('li', ulInfo);
+    li2.textContent = 'Description : ' + repo.description;
+    const li3 = createAndAppend('li', ulInfo);
+    li3.textContent = 'Forks : ' + repo.forks;
+    const li4 = createAndAppend('li', ulInfo);
+    li4.textContent = 'Updated : ' + repo.updated_at;
 
-            let li0 = createAndAppend('li', ulInfo);
-            li0.textContent = 'URL: ';
-            let a = createAndAppend('a', li0)
-            a.innerHTML = rep.html_url;
-            a.setAttribute('href', rep.html_url);
-            a.setAttribute('id', 'aLi');
-            a.setAttribute('target', '_blank');
-            let li1 = createAndAppend('li', ulInfo);
-            li1.textContent = 'Name : ' + rep.name;
-            let li2 = createAndAppend('li', ulInfo);
-            li2.textContent = 'Description : ' + rep.description;
-            let li3 = createAndAppend('li', ulInfo);
-            li3.textContent = 'Forks : ' + rep.forks;
-            let li4 = createAndAppend('li', ulInfo);
-            li4.textContent = 'Updated : ' + rep.updated_at;
-
-        }
-    });
-
+    getContributors(repo.contributors_url);
 }
 
-function getImg(data) {
-    let ulImg = document.getElementById('imgUl');
+function getContributors(url) {
+    const ulImg = document.getElementById('imgUl');
     ulImg.innerHTML = '';
-    fetchJSON(data, (error, rep) => {
+    fetchJSON(url, (error, contributors) => {
         if (error !== null) {
             console.error(error.message);
         }
         else {
-            secondUrl.url = rep.contributors_url;
-            fetchJSON(secondUrl.url, (error, contributor) => {
-                if (error !== null) {
-                    console.error(error.message);
-                } else {
-                    console.log(contributor);
+            contributors.forEach((contributor, i) => {
+                const el = createAndAppend('li', ulImg);
+                el.setAttribute('class', 'element');
 
-                    for (let key in contributor) {
-                        let el = createAndAppend('li', ulImg);
-                        el.setAttribute('class', 'element');
+                const contributorImg = createAndAppend('img', el);
+                contributorImg.setAttribute('src', contributors[i].avatar_url);
 
-                        let contributorImg = createAndAppend('img', el);
-                        contributorImg.setAttribute('src', contributor[key].avatar_url);
+                const contributorName = createAndAppend('div', el);
+                contributorName.innerHTML = contributors[i].login;
+                contributorName.setAttribute('id', 'contributorName');
 
-                        let contributorName = createAndAppend('div', el);
-                        contributorName.innerHTML = contributor[key].login;
-                        contributorName.setAttribute('id', 'contributorName');
-
-                        let contributorCounter = createAndAppend('div', el);
-                        contributorCounter.innerHTML = contributor[key].contributions;
-                        contributorCounter.setAttribute('id', 'contributionsCounter');
-                    }
-                }
+                const contributorCounter = createAndAppend('div', el);
+                contributorCounter.innerHTML = contributors[i].contributions;
+                contributorCounter.setAttribute('id', 'contributionsCounter');
             });
         }
     });
-
 }
+window.onload = main;
