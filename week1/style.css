@@ -59,10 +59,10 @@ html {
     width: 40%;
     line-height: 25px;
     margin: 3%;
+    margin-left: 60px;
     padding: 17px;
     font-size: 17px;
     font-family: Bitter;
-
 }
 
 #imgUl {
@@ -71,7 +71,7 @@ html {
     line-height: 30px;
 }
 
-li{
+li {
     margin: 0.8%;
     padding: 4px;
 }
@@ -82,23 +82,22 @@ img {
     border-radius: 50%;
 }
 
-
-#contributorName{
+#contributorName {
     display: inline-block;
     position: relative;
     bottom: 52px;
+    font-size: 18px;
 }
 
-#contributionsCounter{
+#contributionsCounter {
     float: right;
     display: block;
-    width:30px;
+    width: 30px;
     color: wheat;
-    font-weight: bold;
     background-color: #A90061;
-    /* margin: 8px; */
     margin-top: 40px;
+    margin-right: 40px;
     text-align: center;
     padding: 6px;
-    border-radius: 50%;;
+    border-radius: 50%;
 }
