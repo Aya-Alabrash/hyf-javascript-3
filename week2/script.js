@@ -23,6 +23,11 @@ function main() {
     const container = createAndAppend('div', root);
     container.setAttribute('class', 'container');
 
+    const errorDiv = createAndAppend('div', container);
+    errorDiv.setAttribute('class', 'errorDiv');
+    const errorText = createAndAppend('h3', errorDiv);
+    errorText.setAttribute('id', 'errorText');
+
     const informationDiv = createAndAppend('div', container);
     informationDiv.setAttribute('class', 'infoDiv');
     const ulInfo = createAndAppend('ul', informationDiv);
@@ -37,9 +42,7 @@ function main() {
         .then(data => {
             setupSelect(data);
         })
-        .catch(error => {
-            console.error(error.message);
-        });
+        .catch(error => renderError(error));
 }
 
 function fetchJSON(url) {
@@ -58,6 +61,12 @@ function fetchJSON(url) {
         };
         req.send();
     });
+}
+
+function renderError(err) {
+    //console.error(err.message);
+    const errorText = document.getElementById('errorText');
+    errorText.innerHTML = ' Network error :  ' + err.message;
 }
 
 function setupSelect(repos) {
@@ -119,8 +128,6 @@ function getContributors(url) {
                 contributorCounter.setAttribute('id', 'contributionsCounter');
             });
         })
-        .catch(error => {
-            console.error(error.message);
-        });
+        .catch(error => renderError(error));
 }
 window.onload = main;
