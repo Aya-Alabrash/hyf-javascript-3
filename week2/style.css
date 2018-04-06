@@ -37,6 +37,23 @@ html {
 
 }
 
+.errorDiv {
+    background-color: rgb(248, 237, 238);
+    height: 35px;
+    padding: 30px;
+    margin: 7px;
+    width: 100%;
+    border-radius: 3%;
+}
+
+#errorText {
+    color: #A90061;
+    font-family: Bitter;
+    font-size: 19px;
+    padding-bottom: 20px;
+    margin-top: 4px;
+}
+
 .infoDiv {
     float: left;
     width: 40%;
@@ -58,8 +75,7 @@ html {
     float: right;
     width: 40%;
     line-height: 25px;
-    margin: 3%;
-    margin-left: 60px;
+    margin: 3% 3% 3% 60px;
     padding: 17px;
     font-size: 17px;
     font-family: Bitter;
