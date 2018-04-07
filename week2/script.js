@@ -64,7 +64,6 @@ function fetchJSON(url) {
 }
 
 function renderError(err) {
-    //console.error(err.message);
     const errorText = document.getElementById('errorText');
     errorText.innerHTML = ' Network error :  ' + err.message;
 }
@@ -78,10 +77,8 @@ function setupSelect(repos) {
     });
     select.addEventListener('change', () => {
         getDetails(repos[select.value]);
-        //getContributors(repos[select.value].contributors_url);
     });
     getDetails(repos[0]);
-    //getContributors(repos[0].contributors_url);
 }
 
 function getDetails(repo) {
