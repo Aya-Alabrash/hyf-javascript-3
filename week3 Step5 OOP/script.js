@@ -42,23 +42,28 @@ class View {
   }
 
   async main() {
-    const root = document.getElementById('root');
-    const header = createAndAppend('div', root, { class: 'header' });
-    createAndAppend('label', header, { html: 'Select a Repository: ', class: 'labelClass' });
-    createAndAppend('select', header, { id: 'select' });
+    try {
+      const root = document.getElementById('root');
+      const header = createAndAppend('div', root, { class: 'header' });
+      createAndAppend('label', header, { html: 'Select a Repository: ', class: 'labelClass' });
+      createAndAppend('select', header, { id: 'select' });
 
-    const container = createAndAppend('div', root, { class: 'container' });
-    const errorDiv = createAndAppend('div', container, { class: 'errorDiv' });
-    createAndAppend('h3', errorDiv, { id: 'errorText' });
+      const container = createAndAppend('div', root, { class: 'container' });
+      const errorDiv = createAndAppend('div', container, { class: 'errorDiv' });
+      createAndAppend('h3', errorDiv, { id: 'errorText' });
 
-    const informationDiv = createAndAppend('div', container, { class: 'infoDiv' });
-    createAndAppend('ul', informationDiv, { id: 'infoUl' });
+      const informationDiv = createAndAppend('div', container, { class: 'infoDiv' });
+      createAndAppend('ul', informationDiv, { id: 'infoUl' });
 
-    const imagesDiv = createAndAppend('div', container, { class: 'imgDiv' });
-    createAndAppend('ul', imagesDiv, { id: 'imgUl' });
+      const imagesDiv = createAndAppend('div', container, { class: 'imgDiv' });
+      createAndAppend('ul', imagesDiv, { id: 'imgUl' });
 
-    const repos = await this.fetchJSON(url);
-    this.setupSelect(repos);
+      const repos = await this.fetchJSON(url);
+      this.setupSelect(repos);
+    }
+    catch (err) {
+      renderError(err);
+    }
   }
 
   fetchJSON(url) {
