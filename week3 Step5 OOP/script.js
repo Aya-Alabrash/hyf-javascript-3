@@ -5,6 +5,11 @@ class Repository {
   constructor(data) {
     this._data = data;
   }
+
+  fetchContributors() {
+    return fetchJSON(this._data.contributors_url);
+  }
+
   render(parent) {
     parent.innerHTML = '';
     const li = createAndAppend('li', parent, { html: 'URL: ' });
@@ -58,7 +63,7 @@ class View {
       const imagesDiv = createAndAppend('div', container, { class: 'imgDiv' });
       createAndAppend('ul', imagesDiv, { id: 'imgUl' });
 
-      const repos = await this.fetchJSON(url);
+      const repos = await fetchJSON(url);
       this.setupSelect(repos);
     }
     catch (err) {
@@ -66,35 +71,9 @@ class View {
     }
   }
 
-  fetchJSON(url) {
-    return new Promise((resolve, reject) => {
-      const req = new XMLHttpRequest();
-      req.open('GET', url);
-      req.responseType = 'json';
-      req.onreadystatechange = () => {
-        if (req.readyState === 4) {
-          if (req.status < 400) {
-            resolve(req.response);
-          } else {
-            reject(new Error(req.statusText));
-          }
-        }
-      };
-      req.send();
-    });
-  }
-
   setupSelect(repos) {
     const select = document.getElementById('select');
-    repos.sort((a, b) => {
-      if (a.name.toUpperCase() < b.name.toUpperCase()) {
-        return -1;
-      }
-      if (a.name.toUpperCase() > b.name.toUpperCase()) {
-        return 1;
-      }
-      return 0;
-    });
+    repos.sort((a, b) => a.name.localeCompare(b.name));
 
     repos.forEach((repo, i) => {
       createAndAppend('option', select, { html: repos[i].name, value: i });
@@ -111,16 +90,34 @@ class View {
       const ulInfo = document.getElementById('infoUl');
       const ulImg = document.getElementById('imgUl');
 
-      const data = await this.fetchJSON(repoData.contributors_url);
       const repository = new Repository(repoData);
-      repository.render(ulInfo);
+      const data = await repository.fetchContributors();
       const contributors = new Contributor(data);
+      repository.render(ulInfo);
       contributors.render(ulImg);
     }
     catch (err) {
       renderError(err);
     }
   }
+}
+
+function fetchJSON(url) {
+  return new Promise((resolve, reject) => {
+    const req = new XMLHttpRequest();
+    req.open('GET', url);
+    req.responseType = 'json';
+    req.onreadystatechange = () => {
+      if (req.readyState === 4) {
+        if (req.status < 400) {
+          resolve(req.response);
+        } else {
+          reject(new Error(req.statusText));
+        }
+      }
+    };
+    req.send();
+  });
 }
 
 function createAndAppend(name, parent, options = {}) {
@@ -142,4 +139,4 @@ function renderError(err) {
   errorText.innerHTML = ' Network error :  ' + err.message;
 }
 
-window.onload = new View();
+window.onload = () => new View();
