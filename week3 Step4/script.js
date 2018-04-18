@@ -66,15 +66,7 @@ function renderError(err) {
 function setupSelect(repos) {
   const select = document.getElementById('select');
 
-  repos.sort((a, b) => {
-    if (a.name.toUpperCase() < b.name.toUpperCase()) {
-      return -1;
-    }
-    if (a.name.toUpperCase() > b.name.toUpperCase()) {
-      return 1;
-    }
-    return 0;
-  });
+  repos.sort((a, b) => a.name.localeCompare(b.name));
 
   repos.forEach((repo, i) => {
     createAndAppend('option', select, { html: repos[i].name, value: i });
